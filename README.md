@@ -96,4 +96,4 @@ Edit `app/config.json` for deep customization:
 
 ## 👤 Author
 
-**vaipraonde** — built on top of the @pixbee codebase.
+**[vaipraonde](http://peakd.com/@vaipraonde/)** — built on top of the @pixbee codebase.
