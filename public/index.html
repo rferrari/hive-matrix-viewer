@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HIVE Matrix Viewer</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <canvas id="matrix"></canvas>
+
+  <div id="leaderboard">
+    <h3 title="Ranking of accounts by total observed operations in this session">TOP ACCOUNTS ⓘ</h3>
+    <div id="leader-list">Wait for data...</div>
+  </div>
+
+  <div id="left-panel">
+    <div id="logo" style="margin-bottom: 0;"></div>
+    <div id="block-display">Connecting to the Hive blockchain…</div>
+    <div id="connection-status"></div>
+  </div>
+
+  <div id="panel">
+    <div id="header">
+      <div class="title">⬡ HIVE MATRIX VIEWER</div>
+      <div class="subtitle">LIVE BLOCKCHAIN STREAM</div>
+    </div>
+
+    <div id="stats-bar">
+      <div class="stat-item no-toggle">BLOCK: <span id="s-block">#0</span></div>
+      <button class="stat-item toggle-btn active" data-type="post">POSTS: <span id="s-post">0</span></button>
+      <button class="stat-item toggle-btn active" data-type="comment">CMNTS: <span id="s-comment">0</span></button>
+      <button class="stat-item toggle-btn active" data-type="transfer">XFERS: <span id="s-transfer">0</span></button>
+      <button class="stat-item toggle-btn active" data-type="json">JSON: <span id="s-json">0</span></button>
+      <button class="stat-item toggle-btn active" data-type="vote">VOTES: <span id="s-vote">0</span></button>
+    </div>
+    <div id="price-bar">HIVE/USD: <b id="hive-price">loading…</b></div>
+    <div id="filter-bar">
+      <span id="filter-label">🔍</span>
+      <input id="filter-input" type="text" placeholder="filter keywords, comma = OR">
+    </div>
+    <div id="feed"></div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+
+</html>

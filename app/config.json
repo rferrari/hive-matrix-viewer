@@ -1,0 +1,23 @@
+{
+  "hiveUsername": "vaipraonde",
+  "preferredFrontend": "peakd.com",
+  "handleHivePosts": true,
+  "handleHiveComments": true,
+  "handleCustomJson": false,
+  "handleTransfers": true,
+  "handleVotes": false,
+  "allowedCustomJsonIds": [
+    "*"
+  ],
+  "statsEveryBlocks": 20,
+  "leaderEveryBlocks": 100,
+  "whaleThreshold": 50000,
+  "saveMatches": false,
+  "browserUI": true,
+  "browserPort": 3005,
+  "hiverpc": [
+    "https://api.hive.blog",
+    "https://api.deathwing.me",
+    "https://hive-api.arcange.eu"
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "hiveUsername": "",
+  "preferredFrontend": "peakd.com",
+  "handleHivePosts": true,
+  "handleHiveComments": true,
+  "handleCustomJson": true,
+  "handleTransfers": true,
+  "handleVotes": true,
+  "showBlockSeparator": true,
+  "statsEveryBlocks": 20,
+  "leaderEveryBlocks": 100,
+  "whaleThreshold": 50000,
+  "saveMatches": false,
+  "browserUI": true,
+  "browserPort": 3005,
+  "hiverpc": [
+    "https://api.hive.blog",
+    "https://api.deathwing.me",
+    "https://hive-api.arcange.eu",
+    "https://anyx.io",
+    "https://api.openhive.network",
+    "https://techcoderx.com",
+    "https://hiveapi.actifit.io",
+    "https://rpc.mahdiyari.info",
+    "https://hive-api.dlux.io",
+    "https://hived.emre.sh"
+  ]
+}
