@@ -1,5 +1,7 @@
 'use client';
 
+import Link from "next/link";
+
 interface HUDProps {
     blockNum: number;
     leaderboard: [string, number][];
@@ -33,10 +35,11 @@ export default function HUD({ blockNum, leaderboard }: HUDProps) {
             <div id="left-panel">
                 <div id="logo" style={{ marginBottom: 0 }}>{logoAscii}</div>
                 <div id="block-display">
-                    {blockNum ? `Block #${blockNum.toLocaleString()}` : "Connecting to the Hive blockchain…"}
+                    {blockNum > 0 ? `BLOCK #${blockNum.toLocaleString()}` : "CONNECTING TO THE HIVE BLOCKCHAIN…"}
                 </div>
                 <div id="connection-status">
-                    <span className="status-ok">● buffered stream via next.js</span>
+                    <span className="status-ok">● buffered stream </span>
+                    <Link href="/team" className="author">● Meet Skatehive Team</Link>
                 </div>
             </div>
         </>

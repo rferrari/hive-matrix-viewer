@@ -1,19 +1,20 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import MatrixRain from './MatrixRain';
 import HUD from './HUD';
 import MatrixFeed from './MatrixFeed';
-import { useHiveLive, HiveOp } from '../hooks/useHiveLive';
+import { useHiveLive, HiveOp, HiveSnapshot } from '../hooks/useHiveLive';
 
 interface ClientHomeProps {
-    initialOps: HiveOp[];
+    initialData: HiveSnapshot;
 }
 
-export default function ClientHome({ initialOps }: ClientHomeProps) {
-    const { ops, stats, leaderboard, blockNum, price } = useHiveLive(initialOps);
+export default function ClientHome({ initialData }: ClientHomeProps) {
+    const { ops, stats, leaderboard, blockNum, price } = useHiveLive(initialData);
     const [filter, setFilter] = useState('');
-    const [activeTypes, setActiveTypes] = useState(new Set(['post', 'comment', 'transfer', 'json', 'vote']));
+    const [activeTypes, setActiveTypes] = useState(new Set(['post', 'comment', 'transfer', 'json', 'vote', 'block']));
     const [panelWidth, setPanelWidth] = useState(520);
     const [isResizing, setIsResizing] = useState(false);
 
@@ -55,18 +56,18 @@ export default function ClientHome({ initialOps }: ClientHomeProps) {
                 <div id="resizer" onMouseDown={startResizing} />
 
                 <div id="header">
-                    <div className="title">Hive Matrix Matrix</div>
-                    <div className="subtitle">Real-time Hive blockchain data</div>
+                    <div className="title">Hive Matrix Viewer</div>
+                    <div className="subtitle">Real-time Hive blockchain data explorer</div>
                 </div>
 
                 <div id="stats-bar">
-                    {['post', 'comment', 'transfer', 'json', 'vote'].map((type) => (
+                    {['post', 'comment', 'transfer', 'json', 'vote', 'block'].map((type) => (
                         <button
                             key={type}
                             className={`stat-item toggle-btn ${activeTypes.has(type) ? 'active' : ''}`}
                             onClick={() => toggleType(type)}
                         >
-                            {type.toUpperCase()}S: <span>{stats[type as keyof typeof stats]}</span>
+                            {type.toUpperCase()}S: <span>{stats[type as keyof typeof stats] ?? 0}</span>
                         </button>
                     ))}
                 </div>

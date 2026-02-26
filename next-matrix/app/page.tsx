@@ -1,12 +1,12 @@
-import { getHiveBuffer, startHiveStream } from './lib/hiveStream';
+import { getHiveSnapshot, startHiveStream } from './lib/hiveStream';
 import ClientHome from './components/ClientHome';
 
 // Ensure the stream is running globally
 startHiveStream();
 
 export default async function Home() {
-  // SSR fetches current cache before loading client
-  const initialOps = getHiveBuffer();
+  // SSR fetches current snapshot before loading client
+  const initialData = getHiveSnapshot();
 
-  return <ClientHome initialOps={initialOps} />;
+  return <ClientHome initialData={initialData} />;
 }

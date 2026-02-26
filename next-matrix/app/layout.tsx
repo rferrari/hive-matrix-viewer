@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Hive Matrix Matrix",
-  description: "Real-time Hive blockchain data",
+  title: "Hive Matrix Viewer",
+  description: "Real-time Hive blockchain data explorer",
 };
 
 export default function RootLayout({

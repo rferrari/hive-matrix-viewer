@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { startHiveStream, getHiveBuffer, clients } from '../../lib/hiveStream';
+import { startHiveStream, getHiveSnapshot, clients } from '../../lib/hiveStream';
 
 // Prevent Next.js from caching the SSE route
 export const dynamic = 'force-dynamic';
@@ -14,9 +14,9 @@ export async function GET(req: Request) {
         start(controller) {
             clients.add(controller);
 
-            // Send the current buffer immediately upon connection
-            const buffer = getHiveBuffer();
-            const message = `data: ${JSON.stringify(buffer)}\n\n`;
+            // Send the full snapshot (ops + stats + leaderboard) on connect
+            const snapshot = getHiveSnapshot();
+            const message = `data: ${JSON.stringify({ snapshot: true, ...snapshot })}\n\n`;
             controller.enqueue(new TextEncoder().encode(message));
 
             // Keep-alive ping to prevent connection drops (every 30s)
