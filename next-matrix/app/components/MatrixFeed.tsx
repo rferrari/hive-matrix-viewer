@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useCallback } from 'react';
+import { useEffect, useRef, useCallback, memo } from 'react';
 import { HiveOp } from '../hooks/useHiveLive';
 
 interface MatrixFeedProps {
@@ -65,7 +65,7 @@ export default function MatrixFeed({ ops, filter, activeTypes }: MatrixFeedProps
     );
 }
 
-function BlockSeparator({ op }: { op: HiveOp }) {
+const BlockSeparator = memo(({ op }: { op: HiveOp }) => {
     const time = new Date(op.timestamp + 'Z').toLocaleTimeString([], { hour12: false });
     const blockStr = `#${op.blockNum.toLocaleString()}`;
     return (
@@ -73,7 +73,7 @@ function BlockSeparator({ op }: { op: HiveOp }) {
             ── {blockStr} · {time} ─────────────────────────────────
         </div>
     );
-}
+});
 
 function getTransferLevel(amount: number) {
     if (amount >= 10000) return { level: 'WHALE', emoji: '🐳', className: 'tag-whale', amtClass: 'amount-whale' };
@@ -83,7 +83,7 @@ function getTransferLevel(amount: number) {
     return { level: 'TRANSFER', emoji: '', className: 'tag-transfer', amtClass: 'amount-small' };
 }
 
-function OpEntry({ op }: { op: HiveOp }) {
+const OpEntry = memo(({ op }: { op: HiveOp }) => {
     const { type, data, timestamp } = op;
     const time = new Date(timestamp + 'Z').toLocaleTimeString([], { hour12: false });
 
@@ -136,4 +136,4 @@ function OpEntry({ op }: { op: HiveOp }) {
             {content}
         </div>
     );
-}
+});

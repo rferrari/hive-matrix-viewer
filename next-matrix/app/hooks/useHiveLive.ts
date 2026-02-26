@@ -16,8 +16,9 @@ export interface HiveSnapshot {
     leaderboard: [string, number][];
 }
 
-const MAX_CLIENT_OPS = 2000;
-const MAX_KNOWN_IDS = 3000;
+const MAX_CLIENT_OPS = 150;
+const MAX_KNOWN_IDS = 1000;
+const LEADERBOARD_UPDATE_INTERVAL = 5000; // Update leaderboard every 5s
 
 export function useHiveLive(initialData: HiveSnapshot) {
     const [ops, setOps] = useState<HiveOp[]>(initialData.ops);
@@ -88,10 +89,10 @@ export function useHiveLive(initialData: HiveSnapshot) {
                     return true;
                 });
 
-                // Cap knownIds to prevent unbounded growth
+                // Cap knownIds to prevent memory growth
                 if (knownIds.current.size > MAX_KNOWN_IDS) {
-                    const entries = [...knownIds.current];
-                    knownIds.current = new Set(entries.slice(entries.length - MAX_CLIENT_OPS));
+                    const sorted = Array.from(knownIds.current);
+                    knownIds.current = new Set(sorted.slice(-MAX_CLIENT_OPS));
                 }
 
                 if (filtered.length > 0) {
@@ -134,15 +135,28 @@ export function useHiveLive(initialData: HiveSnapshot) {
                         return max;
                     });
 
-                    const top = [...accountActivity.current.entries()]
-                        .sort((a, b) => b[1] - a[1])
-                        .slice(0, 10);
-                    setLeaderboard(top);
                 }
             } catch (err) {
                 console.error("SSE parse error:", err);
             }
         };
+
+        // Throttled leaderboard update
+        const leaderboardInterval = setInterval(() => {
+            const top = [...accountActivity.current.entries()]
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 10);
+            setLeaderboard(top);
+
+            // Periodically prune accountActivity to prevent unbounded growth
+            // (Only keep users who have at least some minimal activity or are in top 100)
+            if (accountActivity.current.size > 2000) {
+                const pruned = [...accountActivity.current.entries()]
+                    .sort((a, b) => b[1] - a[1])
+                    .slice(0, 500);
+                accountActivity.current = new Map(pruned);
+            }
+        }, LEADERBOARD_UPDATE_INTERVAL);
 
         source.onerror = (err) => {
             console.error("SSE connection error:", err);
@@ -150,6 +164,7 @@ export function useHiveLive(initialData: HiveSnapshot) {
 
         return () => {
             source.close();
+            clearInterval(leaderboardInterval);
         };
     }, []);
 

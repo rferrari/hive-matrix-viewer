@@ -3,7 +3,7 @@ import { Client } from '@hiveio/dhive';
 // Simple in-memory buffer for server-side caching
 // Note: This is per-instance on Vercel and ephemeral.
 let buffer: any[] = [];
-const MAX_BUFFER_SIZE = 500;
+const MAX_BUFFER_SIZE = 200;
 let isStreaming = false;
 
 // Server-side stats and leaderboard for consistent initial state
