@@ -23,7 +23,9 @@ canvas {
   position: fixed;
   top: 0;
   right: 0;
-  width: 520px;
+  width: var(--panel-width, 520px);
+  min-width: 300px;
+  max-width: 80vw;
   height: 100vh;
   z-index: 10;
   background: linear-gradient(to left, rgba(0, 0, 0, 0.97), rgba(0, 0, 0, 0.85));
@@ -32,6 +34,23 @@ canvas {
   flex-direction: column;
   overflow: hidden;
 }
+
+#resizer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  cursor: ew-resize;
+  z-index: 100;
+  transition: background 0.2s;
+}
+
+#resizer:hover, .resizing #resizer {
+  background: rgba(0, 255, 0, 0.3);
+  box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+}
+
 
 #header {
   padding: 14px 18px 10px;
@@ -348,7 +367,7 @@ canvas {
   position: fixed;
   top: 0;
   left: 0;
-  width: calc(100vw - 520px);
+  width: calc(100vw - var(--panel-width, 520px));
   height: 100vh;
   z-index: 5;
   display: flex;

@@ -279,3 +279,44 @@ function connect() {
     };
 }
 connect();
+
+// ── Panel Resize Logic ───────────────────────────────────────────────────────
+(function initResizable() {
+    const panel = document.getElementById('panel');
+    const resizer = document.getElementById('resizer');
+    let isResizing = false;
+
+    // Load saved width
+    const savedWidth = localStorage.getItem('panel-width');
+    if (savedWidth) {
+        document.documentElement.style.setProperty('--panel-width', `${savedWidth}px`);
+    }
+
+    resizer.addEventListener('mousedown', (e) => {
+        isResizing = true;
+        document.body.classList.add('resizing');
+        document.addEventListener('mousemove', handleMouseMove);
+        document.addEventListener('mouseup', stopResizing);
+        e.preventDefault();
+    });
+
+    function handleMouseMove(e) {
+        if (!isResizing) return;
+
+        // Calculate width from right edge
+        const newWidth = window.innerWidth - e.clientX;
+
+        // Constrain width (matching CSS min/max for safety)
+        const constrainedWidth = Math.max(300, Math.min(newWidth, window.innerWidth * 0.8));
+
+        document.documentElement.style.setProperty('--panel-width', `${constrainedWidth}px`);
+        localStorage.setItem('panel-width', constrainedWidth);
+    }
+
+    function stopResizing() {
+        isResizing = false;
+        document.body.classList.remove('resizing');
+        document.removeEventListener('mousemove', handleMouseMove);
+        document.removeEventListener('mouseup', stopResizing);
+    }
+})();
