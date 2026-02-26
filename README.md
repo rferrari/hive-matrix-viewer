@@ -6,6 +6,16 @@
 
 ---
 
+## 🚀 Project Flavors
+
+This project now comes in three distinct flavors to suit your needs:
+
+1.  **[Standard (Terminal + Web)](./app)**: The original powerful version. Requires a local Node.js backend.
+2.  **[Browser-Only (Standalone)](./browser-only)**: Zero-backend version. Runs entirely in your browser using `dhive`.
+3.  **[Next.js (Vercel Ready)](./next-matrix)**: Premium production version. Features a server-side buffer to reduce Hive RPC load and is 100% ready for Vercel deployment.
+
+---
+
 ## 🚀 Features
 
 - **Matrix Terminal Feed**: Live-streaming operation feed with enhanced colors (Green for JSON, Yellow/Cyan for Votes, Blue for Posts).

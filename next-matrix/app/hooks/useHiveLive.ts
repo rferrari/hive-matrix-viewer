@@ -10,20 +10,51 @@ export interface HiveOp {
     receivedAt: number;
 }
 
-export function useHiveLive() {
-    const [ops, setOps] = useState<HiveOp[]>([]);
-    const [stats, setStats] = useState({ post: 0, comment: 0, transfer: 0, json: 0, vote: 0 });
-    const [leaderboard, setLeaderboard] = useState<[string, number][]>([]);
-    const [blockNum, setBlockNum] = useState(0);
-    const [price, setPrice] = useState('loading…');
-    const knownIds = useRef(new Set<string>());
+export function useHiveLive(initialOps: HiveOp[] = []) {
+    const [ops, setOps] = useState<HiveOp[]>(initialOps);
+
     const accountActivity = useRef(new Map<string, number>());
+    const knownIds = useRef(new Set<string>(
+        initialOps.map(op => `${op.blockNum}-${op.type}-${JSON.stringify(op.data).slice(0, 50)}`)
+    ));
+
+    const [stats, setStats] = useState(() => {
+        const initialStats = { post: 0, comment: 0, transfer: 0, json: 0, vote: 0 };
+        initialOps.forEach(op => {
+            const { type, data } = op;
+            if (type === 'comment') initialStats[data.parent_author === '' ? 'post' : 'comment']++;
+            else if (type === 'transfer') initialStats.transfer++;
+            else if (type === 'custom_json') initialStats.json++;
+            else if (type === 'vote') initialStats.vote++;
+        });
+        return initialStats;
+    });
+
+    const [leaderboard, setLeaderboard] = useState<[string, number][]>(() => {
+        initialOps.forEach(op => {
+            const { type, data } = op;
+            if (type === 'comment') accountActivity.current.set(data.author, (accountActivity.current.get(data.author) || 0) + 1);
+            else if (type === 'transfer') [data.from, data.to].forEach(a => accountActivity.current.set(a, (accountActivity.current.get(a) || 0) + 1));
+            else if (type === 'custom_json') {
+                const auths = [...(data.required_posting_auths || []), ...(data.required_auths || [])];
+                auths.forEach(a => accountActivity.current.set(a, (accountActivity.current.get(a) || 0) + 1));
+            } else if (type === 'vote') accountActivity.current.set(data.voter, (accountActivity.current.get(data.voter) || 0) + 1);
+        });
+        return [...accountActivity.current.entries()].sort((a, b) => b[1] - a[1]).slice(0, 10);
+    });
+
+    const [blockNum, setBlockNum] = useState(() => {
+        return initialOps.length > 0 ? Math.max(...initialOps.map(op => op.blockNum)) : 0;
+    });
+
+    const [price, setPrice] = useState('loading…');
 
     useEffect(() => {
-        const poll = async () => {
+        const source = new EventSource('/api/hive');
+
+        source.onmessage = (event) => {
             try {
-                const res = await fetch('/api/hive');
-                const { ops: newOps } = await res.json();
+                const newOps = JSON.parse(event.data);
 
                 if (!newOps || newOps.length === 0) return;
 
@@ -38,29 +69,37 @@ export function useHiveLive() {
                     setOps(prev => [...prev, ...filtered].slice(-400));
 
                     // Update stats and leaderboard based on new items
-                    const newStats = { ...stats };
-                    filtered.forEach((op: HiveOp) => {
-                        const type = op.type;
-                        const data = op.data;
+                    setStats(prevStats => {
+                        const newStats = { ...prevStats };
+                        let updatedBlockNum = blockNum;
 
-                        if (type === 'comment') {
-                            newStats[data.parent_author === '' ? 'post' : 'comment']++;
-                            accountActivity.current.set(data.author, (accountActivity.current.get(data.author) || 0) + 1);
-                        } else if (type === 'transfer') {
-                            newStats.transfer++;
-                            [data.from, data.to].forEach(a => accountActivity.current.set(a, (accountActivity.current.get(a) || 0) + 1));
-                        } else if (type === 'custom_json') {
-                            newStats.json++;
-                            const auths = [...(data.required_posting_auths || []), ...(data.required_auths || [])];
-                            auths.forEach(a => accountActivity.current.set(a, (accountActivity.current.get(a) || 0) + 1));
-                        } else if (type === 'vote') {
-                            newStats.vote++;
-                            accountActivity.current.set(data.voter, (accountActivity.current.get(data.voter) || 0) + 1);
-                        }
+                        filtered.forEach((op: HiveOp) => {
+                            const type = op.type;
+                            const data = op.data;
 
-                        if (op.blockNum > blockNum) setBlockNum(op.blockNum);
+                            if (type === 'comment') {
+                                newStats[data.parent_author === '' ? 'post' : 'comment']++;
+                                accountActivity.current.set(data.author, (accountActivity.current.get(data.author) || 0) + 1);
+                            } else if (type === 'transfer') {
+                                newStats.transfer++;
+                                [data.from, data.to].forEach(a => accountActivity.current.set(a, (accountActivity.current.get(a) || 0) + 1));
+                            } else if (type === 'custom_json') {
+                                newStats.json++;
+                                const auths = [...(data.required_posting_auths || []), ...(data.required_auths || [])];
+                                auths.forEach(a => accountActivity.current.set(a, (accountActivity.current.get(a) || 0) + 1));
+                            } else if (type === 'vote') {
+                                newStats.vote++;
+                                accountActivity.current.set(data.voter, (accountActivity.current.get(data.voter) || 0) + 1);
+                            }
+
+                            if (op.blockNum > updatedBlockNum) {
+                                updatedBlockNum = op.blockNum;
+                            }
+                        });
+
+                        setBlockNum(updatedBlockNum);
+                        return newStats;
                     });
-                    setStats(newStats);
 
                     const top = [...accountActivity.current.entries()]
                         .sort((a, b) => b[1] - a[1])
@@ -68,13 +107,18 @@ export function useHiveLive() {
                     setLeaderboard(top);
                 }
             } catch (err) {
-                console.error("Polling error:", err);
+                console.error("SSE parse error:", err);
             }
         };
 
-        const interval = setInterval(poll, 2000);
-        return () => clearInterval(interval);
-    }, [stats, blockNum]);
+        source.onerror = (err) => {
+            console.error("SSE connection error:", err);
+        };
+
+        return () => {
+            source.close();
+        };
+    }, []);
 
     // Price fetcher
     useEffect(() => {
