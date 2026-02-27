@@ -16,7 +16,7 @@ export interface HiveSnapshot {
     leaderboard: [string, number][];
 }
 
-const MAX_CLIENT_OPS = 150;
+const MAX_CLIENT_OPS = 1500;
 const MAX_KNOWN_IDS = 1000;
 const LEADERBOARD_UPDATE_INTERVAL = 5000; // Update leaderboard every 5s
 

@@ -76,11 +76,11 @@ const BlockSeparator = memo(({ op }: { op: HiveOp }) => {
 });
 
 function getTransferLevel(amount: number) {
-    if (amount >= 10000) return { level: 'WHALE', emoji: '🐳', className: 'tag-whale', amtClass: 'amount-whale' };
-    if (amount >= 1000) return { level: 'ORCA', emoji: '🫍', className: 'tag-orca', amtClass: 'amount-orca' };
-    if (amount >= 100) return { level: 'DOLPHIN', emoji: '🐬', className: 'tag-dolphin', amtClass: 'amount-dolphin' };
-    if (amount >= 10) return { level: 'MINNOW', emoji: '🐟', className: 'tag-minnow', amtClass: 'amount-minnow' };
-    return { level: 'TRANSFER', emoji: '', className: 'tag-transfer', amtClass: 'amount-small' };
+    if (amount >= 10000) return { level: 'WHALE', emoji: ' 🐳', className: 'tag-whale', amtClass: 'amount-whale' };
+    if (amount >= 1000) return { level: 'ORCA', emoji: ' 🫍', className: 'tag-orca', amtClass: 'amount-orca' };
+    if (amount >= 100) return { level: 'DOLPHIN', emoji: ' 🐬', className: 'tag-dolphin', amtClass: 'amount-dolphin' };
+    if (amount >= 10) return { level: 'MINNOW', emoji: ' 🐟', className: 'tag-minnow', amtClass: 'amount-minnow' };
+    return { level: '', emoji: '', className: 'tag-transfer', amtClass: 'amount-small' };
 }
 
 const OpEntry = memo(({ op }: { op: HiveOp }) => {
@@ -104,7 +104,7 @@ const OpEntry = memo(({ op }: { op: HiveOp }) => {
 
         content = (
             <>
-                <span className={`tag ${className}`}>{emoji} {level}</span>
+                <span className={`tag ${className}`}>TRANSFER{emoji}{level}</span>
                 <a href={`https://peakd.com/@${data.from}`} className="author" target="_blank">@{data.from}</a> sent
                 <b className={amtClass}> {data.amount}</b> to
                 <a href={`https://peakd.com/@${data.to}`} className="author" target="_blank"> @${data.to}</a>
