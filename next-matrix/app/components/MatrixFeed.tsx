@@ -107,7 +107,7 @@ const OpEntry = memo(({ op }: { op: HiveOp }) => {
                 <span className={`tag ${className}`}>TRANSFER{emoji}</span>
                 <a href={`https://peakd.com/@${data.from}`} className="author" target="_blank">@{data.from}</a> sent
                 <b className={amtClass}> {data.amount}</b> to
-                <a href={`https://peakd.com/@${data.to}`} className="author" target="_blank"> @${data.to}</a>
+                <a href={`https://peakd.com/@${data.to}`} className="author" target="_blank"> @{data.to}</a>
                 {data.memo && <span className="memo"> [{data.memo}]</span>}
             </>
         );
